@@ -10,10 +10,12 @@ spring:
       server:
         webmvc:
           routes:
-            - id: ride-service-api
+            - id: ride-service
               uri: https://ride-service-0k5f.onrender.com
               predicates:
                 - Path=/api/rides/**
+              filters:
+                - SetRequestHeader=Accept-Encoding, identity
 
 eureka:
   client:
