@@ -1,0 +1,627 @@
+
+<main>
+
+  <!-- TELA INICIAL -->
+  <section class="home-screen" *ngIf="!role">
+
+    <nav class="navbar">
+      <div class="logo">RIDE<span>.</span></div>
+
+      <div class="connection">
+        <span [class.online]="connected"></span>
+        {{ connected ? 'Sistema conectado' : 'Sistema disponível' }}
+      </div>
+    </nav>
+
+    <div class="hero">
+
+      <div class="hero-text">
+        <span class="eyebrow">MOBILIDADE INTELIGENTE</span>
+
+        <h1>Sua cidade.<br>Seu caminho.</h1>
+
+        <p>
+          Uma maneira simples e inteligente de chegar
+          ao seu destino com segurança e praticidade.
+        </p>
+
+        <div class="hero-buttons">
+
+          <button
+            type="button"
+            class="primary-button"
+            (click)="escolherPerfil('CLIENT')">
+            Solicitar uma corrida
+            <span>→</span>
+          </button>
+
+          <button
+            type="button"
+            class="secondary-button"
+            (click)="escolherPerfil('DRIVER')">
+            Sou motorista
+          </button>
+
+        </div>
+      </div>
+
+      <div class="hero-visual">
+
+        <div class="visual-decoration"></div>
+
+        <div class="visual-car">🚗</div>
+
+        <div class="visual-card">
+          <i>📍</i>
+          <div>
+            <strong>Seu próximo destino</strong>
+            <small>Uma viagem a poucos cliques de distância.</small>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <footer class="home-footer">
+      <span>RIDE — Mobilidade inteligente</span>
+      <span>Conectando pessoas e destinos</span>
+    </footer>
+
+  </section>
+
+  <!-- ================================= -->
+  <!-- PAINEL DO CLIENTE -->
+  <!-- ================================= -->
+
+  <section class="app-screen" *ngIf="role === 'CLIENT'">
+
+    <nav class="app-navbar">
+
+      <div class="logo">RIDE<span>.</span></div>
+
+      <button
+        type="button"
+        class="back-button"
+        (click)="voltarInicio()">
+        ← Voltar ao início
+      </button>
+
+    </nav>
+
+    <div class="dashboard">
+
+      <div class="welcome">
+        <span class="eyebrow">ÁREA DO PASSAGEIRO</span>
+
+        <h1>Olá, {{ clientName }}.</h1>
+
+        <p>
+          Para onde vamos hoje?
+        </p>
+      </div>
+
+      <div class="client-layout">
+
+        <!-- FORMULÁRIO DE CORRIDA -->
+
+        <section class="booking-card">
+
+          <div class="card-heading">
+
+            <i>🚗</i>
+
+            <div>
+              <h2>Solicitar viagem</h2>
+              <p>Informe os endereços da sua viagem.</p>
+            </div>
+
+          </div>
+
+          <!-- PARTIDA -->
+
+          <div class="field address-field">
+
+            <label for="origin">Local de partida</label>
+
+            <div class="input-icon">
+
+              <i class="origin-dot"></i>
+
+              <input
+                id="origin"
+                type="text"
+                pInputText
+                [(ngModel)]="origin"
+                (ngModelChange)="buscarEnderecos('origin')"
+                (focus)="mostrarSugestoes('origin')"
+                autocomplete="off"
+                placeholder="Digite rua, número ou bairro">
+
+            </div>
+
+            <small class="search-hint" *ngIf="searchingOrigin">
+              Buscando endereços...
+            </small>
+
+            <div
+              class="address-suggestions"
+              *ngIf="mostrarSugestoesPartida && originSuggestions.length > 0">
+
+              <button
+                type="button"
+                class="suggestion-item"
+                *ngFor="let item of originSuggestions"
+                (mousedown)="$event.preventDefault()"
+                (click)="selecionarEndereco('origin', item)">
+
+                <i>📍</i>
+
+                <span>
+                  <strong>{{ item.label }}</strong>
+                </span>
+
+              </button>
+
+            </div>
+
+          </div>
+
+          <!-- DESTINO -->
+
+          <div class="field address-field">
+
+            <label for="destination">Destino</label>
+
+            <div class="input-icon">
+
+              <i class="destination-dot"></i>
+
+              <input
+                id="destination"
+                type="text"
+                pInputText
+                [(ngModel)]="destination"
+                (ngModelChange)="buscarEnderecos('destination')"
+                (focus)="mostrarSugestoes('destination')"
+                autocomplete="off"
+                placeholder="Digite seu destino">
+
+            </div>
+
+            <small class="search-hint" *ngIf="searchingDestination">
+              Buscando endereços...
+            </small>
+
+            <div
+              class="address-suggestions"
+              *ngIf="mostrarSugestoesDestino && destinationSuggestions.length > 0">
+
+              <button
+                type="button"
+                class="suggestion-item"
+                *ngFor="let item of destinationSuggestions"
+                (mousedown)="$event.preventDefault()"
+                (click)="selecionarEndereco('destination', item)">
+
+                <i>📍</i>
+
+                <span>
+                  <strong>{{ item.label }}</strong>
+                </span>
+
+              </button>
+
+            </div>
+
+          </div>
+
+          <button
+            type="button"
+            class="secondary-button full-button"
+            (click)="usarMinhaLocalizacao()">
+            ◎ Usar minha localização atual
+          </button>
+
+          <div class="feedback" *ngIf="mapMessage">
+            {{ mapMessage }}
+          </div>
+
+          <!-- ESTIMATIVA -->
+
+          <div class="price-estimate" *ngIf="routeEstimate">
+
+            <div>
+              <small>Distância</small>
+              <strong>
+                {{ routeEstimate.distanceKm | number:'1.1-2' }} km
+              </strong>
+            </div>
+
+            <div>
+              <small>Tempo estimado</small>
+              <strong>
+                {{ routeEstimate.durationMinutes | number:'1.0-0' }} min
+              </strong>
+            </div>
+
+            <div>
+              <small>Valor estimado</small>
+              <strong>
+                {{ routeEstimate.estimatedPrice | currency:'BRL' }}
+              </strong>
+            </div>
+
+          </div>
+
+          <button
+            type="button"
+            class="primary-button full-button"
+            [disabled]="loading || calculatingRoute || !routeEstimate"
+            (click)="solicitarCorrida()">
+
+            <span *ngIf="!loading">Solicitar corrida →</span>
+            <span *ngIf="loading">Solicitando...</span>
+
+          </button>
+
+          <p class="feedback" *ngIf="message">
+            {{ message }}
+          </p>
+
+        </section>
+
+        <!-- MAPA E CORRIDA ATUAL -->
+
+        <section class="trip-card">
+
+          <div class="trip-card-heading">
+            <div>
+              <h2>Mapa da viagem</h2>
+              <p class="feedback">
+                Visualize sua partida, destino e trajeto.
+              </p>
+            </div>
+            <i>📍</i>
+          </div>
+
+          <div class="map-card">
+
+            <div id="ride-map"></div>
+
+            <div class="map-legend">
+              <span>
+                <i class="dot origin-dot"></i>
+                Partida
+              </span>
+
+              <span>
+                <i class="dot destination-dot"></i>
+                Destino
+              </span>
+            </div>
+
+            <button
+              type="button"
+              class="secondary-button full-button"
+              (click)="limparRota()">
+              Limpar rota
+            </button>
+
+          </div>
+
+          <div *ngIf="!currentRide" class="empty-state">
+            <i>🚘</i>
+            <h3>Nenhuma viagem solicitada</h3>
+            <p>
+              Após solicitar uma corrida, as informações
+              aparecerão aqui.
+            </p>
+          </div>
+
+          <div *ngIf="currentRide" class="trip-details">
+
+            <span class="ride-number">
+              CORRIDA #{{ currentRide.id }}
+            </span>
+
+            <div class="route">
+
+              <div class="route-point">
+                <span class="dot origin-dot"></span>
+                <div>
+                  <small>PARTIDA</small>
+                  <strong>{{ currentRide.origin }}</strong>
+                </div>
+              </div>
+
+              <div class="route-line"></div>
+
+              <div class="route-point">
+                <span class="dot destination-dot"></span>
+                <div>
+                  <small>DESTINO</small>
+                  <strong>{{ currentRide.destination }}</strong>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="status-box">
+              <span class="status-indicator"></span>
+              <div>
+                <small>STATUS DA VIAGEM</small>
+                <strong>
+                  {{ getStatusLabel(currentRide.status) }}
+                </strong>
+              </div>
+            </div>
+
+            <p class="driver-info" *ngIf="currentRide.driverName">
+              Motorista: {{ currentRide.driverName }}
+            </p>
+
+          </div>
+
+        </section>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ================================= -->
+  <!-- PAINEL DO MOTORISTA -->
+  <!-- ================================= -->
+
+  <section class="app-screen" *ngIf="role === 'DRIVER'">
+
+    <nav class="app-navbar">
+
+      <div class="logo">RIDE<span>.</span></div>
+
+      <button
+        type="button"
+        class="back-button"
+        (click)="voltarInicio()">
+        ← Voltar ao início
+      </button>
+
+    </nav>
+
+    <div class="dashboard">
+
+      <div class="welcome">
+        <span class="eyebrow">ÁREA DO MOTORISTA</span>
+
+        <h1>Olá, {{ driverName }}.</h1>
+
+        <p>
+          Acompanhe as solicitações e gerencie suas viagens.
+        </p>
+      </div>
+
+      <div class="driver-profile">
+
+        <div class="driver-avatar">🚗</div>
+
+        <div class="driver-data">
+          <strong>{{ driverName }}</strong>
+          <small>Motorista RIDE</small>
+        </div>
+
+        <div class="availability">
+          <span [class.online]="connected"></span>
+          {{ connected ? 'Conectado' : 'Desconectado' }}
+        </div>
+
+      </div>
+
+      <div class="driver-stats">
+
+        <div class="stat-card">
+          <small>Corridas disponíveis</small>
+          <strong>{{ corridasDisponiveis.length }}</strong>
+        </div>
+
+        <div class="stat-card">
+          <small>Minhas corridas ativas</small>
+          <strong>{{ minhasCorridas.length }}</strong>
+        </div>
+
+      </div>
+
+      <div class="active-ride-warning" *ngIf="possuiCorridaAtiva">
+        <i>⚠</i>
+        <div>
+          <strong>Você possui uma corrida ativa.</strong>
+          <p>Finalize a viagem atual antes de aceitar outra solicitação.</p>
+        </div>
+      </div>
+
+      <p class="feedback" *ngIf="message">
+        {{ message }}
+      </p>
+
+      <!-- MINHAS CORRIDAS -->
+
+      <section class="rides-section" *ngIf="minhasCorridas.length > 0">
+
+        <div class="section-heading">
+          <h2>Minhas corridas</h2>
+          <span class="live-tag">
+            <span></span>
+            EM ANDAMENTO
+          </span>
+        </div>
+
+        <article
+          class="ride-request"
+          *ngFor="let ride of minhasCorridas">
+
+          <div class="request-top">
+            <strong>Corrida #{{ ride.id }}</strong>
+
+            <span class="status-tag">
+              {{ getStatusLabel(ride.status) }}
+            </span>
+          </div>
+
+          <div class="route">
+
+            <div class="route-point">
+              <span class="dot origin-dot"></span>
+              <div>
+                <small>PARTIDA</small>
+                <strong>{{ ride.origin }}</strong>
+              </div>
+            </div>
+
+            <div class="route-line"></div>
+
+            <div class="route-point">
+              <span class="dot destination-dot"></span>
+              <div>
+                <small>DESTINO</small>
+                <strong>{{ ride.destination }}</strong>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="request-bottom">
+
+            <span>{{ getStatusLabel(ride.status) }}</span>
+
+            <button
+              type="button"
+              class="primary-button accept-button"
+              *ngIf="ride.status === 'ACCEPTED'"
+              (click)="iniciarCorrida(ride.id)">
+              Iniciar corrida
+            </button>
+
+            <button
+              type="button"
+              class="primary-button accept-button"
+              *ngIf="ride.status === 'IN_PROGRESS'"
+              (click)="finalizarCorrida(ride.id)">
+              Finalizar corrida
+            </button>
+
+          </div>
+
+        </article>
+
+      </section>
+
+      <!-- SOLICITAÇÕES DISPONÍVEIS -->
+
+      <section class="rides-section">
+
+        <div class="section-heading">
+
+          <div>
+            <h2>Solicitações disponíveis</h2>
+            <p class="feedback">
+              Corridas aguardando um motorista.
+            </p>
+          </div>
+
+          <span class="live-tag">
+            <span></span>
+            AO VIVO
+          </span>
+
+        </div>
+
+        <div
+          class="empty-state"
+          *ngIf="corridasDisponiveis.length === 0">
+
+          <i>🚘</i>
+
+          <h3>Nenhuma corrida disponível</h3>
+
+          <p>
+            Novas solicitações aparecerão aqui automaticamente.
+          </p>
+
+        </div>
+
+        <article
+          class="ride-request"
+          *ngFor="let ride of corridasDisponiveis">
+
+          <div class="request-top">
+
+            <div>
+              <span class="ride-number">
+                CORRIDA #{{ ride.id }}
+              </span>
+
+              <h3>
+                {{ ride.clientName || 'Cliente #' + ride.clientId }}
+              </h3>
+            </div>
+
+            <span class="waiting-tag">
+              AGUARDANDO
+            </span>
+
+          </div>
+
+          <div class="route">
+
+            <div class="route-point">
+              <span class="dot origin-dot"></span>
+              <div>
+                <small>PARTIDA</small>
+                <strong>{{ ride.origin }}</strong>
+              </div>
+            </div>
+
+            <div class="route-line"></div>
+
+            <div class="route-point">
+              <span class="dot destination-dot"></span>
+              <div>
+                <small>DESTINO</small>
+                <strong>{{ ride.destination }}</strong>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="request-bottom">
+
+            <span *ngIf="ride.distanceKm">
+              {{ ride.distanceKm | number:'1.1-2' }} km
+            </span>
+
+            <span *ngIf="ride.estimatedPrice">
+              {{ ride.estimatedPrice | currency:'BRL' }}
+            </span>
+
+            <button
+              type="button"
+              class="primary-button accept-button"
+              [disabled]="acceptingRideId !== null || possuiCorridaAtiva"
+              (click)="aceitarCorrida(ride.id)">
+
+              {{ acceptingRideId === ride.id ? 'Aceitando...' : 'Aceitar corrida' }}
+
+            </button>
+
+          </div>
+
+        </article>
+
+      </section>
+
+    </div>
+
+  </section>
+
+</main>

@@ -1,0 +1,17 @@
+
+@import "primeicons/primeicons.css";
+@import "leaflet/dist/leaflet.css";
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  background: #f7f7f7;
+}

@@ -1,0 +1,67 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Teste WebSocket - Corridas</title>
+</head>
+<body>
+<h1>Teste de notificações</h1>
+<p id="status">Conectando...</p>
+
+<h3>Corridas recebidas:</h3>
+<pre id="mensagens"></pre>
+
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7/bundles/stomp.umd.min.js"></script>
+
+<script>
+    const status = document.getElementById("status");
+    const mensagens = document.getElementById("mensagens");
+
+    const corridasInscritas = new Set();
+
+    const client = new StompJs.Client({
+        webSocketFactory: () => new SockJS("http://localhost:8082/ws"),
+
+        debug: (mensagem) => console.log("STOMP:", mensagem),
+
+        onConnect: () => {
+            status.textContent = "Conectado ao WebSocket!";
+
+            client.subscribe("/topic/rides", (message) => {
+                const corrida = JSON.parse(message.body);
+
+                console.log("NOVA CORRIDA:", corrida);
+
+                mensagens.textContent +=
+                    "Nova corrida: " + JSON.stringify(corrida) + "\n\n";
+
+                const id = corrida.id;
+
+                if (!corridasInscritas.has(id)) {
+                    corridasInscritas.add(id);
+
+                    client.subscribe("/topic/rides/" + id, (atualizacao) => {
+                        console.log("ATUALIZAÇÃO:", atualizacao.body);
+
+                        mensagens.textContent +=
+                            "Atualização da corrida " + id + ": " +
+                            atualizacao.body + "\n\n";
+                    });
+
+                    console.log("Inscrito nas atualizações da corrida:", id);
+                }
+            });
+        },
+
+        onStompError: (error) => {
+            status.textContent = "Erro na conexão WebSocket.";
+            console.error(error);
+        }
+    });
+
+    client.activate();
+</script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+﻿# Java / Maven
+**/target/
+
+# Angular / Node
+**/node_modules/
+**/.angular/
+**/dist/
+
+# IDE
+.idea/
+**/.idea/
+.vscode/
+**/.vscode/
+
+# Arquivos do sistema
+Thumbs.db
+.DS_Store
+
+# Variáveis de ambiente e segredos
+.env
+.env.*
+!.env.example
+
+# Logs e backups
+*.log
+frontend/package-lock.backup.json
