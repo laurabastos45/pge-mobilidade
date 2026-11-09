@@ -8,14 +8,19 @@ spring:
   cloud:
     gateway:
       server:
-        webflux:
-          discovery:
-            locator:
-              enabled: true
-              lower-case-service-id: true
+        webmvc:
+          websocket:
+            allowed-origins:
+              - https://pge-mobilidade.vercel.app
           routes:
-            - id: ride-service-websocket
+            - id: ride-websocket
               uri: lb:ws://ride-service
+              predicates:
+                - Path=/ws/**
+                - Header=Upgrade, websocket
+
+            - id: ride-sockjs
+              uri: lb://ride-service
               predicates:
                 - Path=/ws/**
 
