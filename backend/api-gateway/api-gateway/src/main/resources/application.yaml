@@ -5,17 +5,32 @@ spring:
   application:
     name: api-gateway
 
+  # O Eureka traz o Apache HttpClient, cujo pool padrão é de só 5 conexões por destino.
+  # As conexões longas do tempo real (SockJS) ocupam esse pool e travam a API.
+  # O cliente HTTP nativo do Java não tem esse limite.
+  http:
+    clients:
+      imperative:
+        factory: jdk
+
   cloud:
     gateway:
       server:
         webmvc:
           routes:
             - id: ride-service
-              uri: https://ride-service-0k5f.onrender.com
+              # Local/Docker: lb://ride-service (via Eureka). Sem a variável, segue para o Render.
+              uri: ${RIDE_SERVICE_URL:https://ride-service-0k5f.onrender.com}
               predicates:
                 - Path=/api/rides/**
               filters:
                 - SetRequestHeader=Accept-Encoding, identity
+
+            # Tempo real (SockJS/STOMP) do Ride Service
+            - id: ride-service-ws
+              uri: ${RIDE_SERVICE_URL:https://ride-service-0k5f.onrender.com}
+              predicates:
+                - Path=/ws/**
 
 eureka:
   client:

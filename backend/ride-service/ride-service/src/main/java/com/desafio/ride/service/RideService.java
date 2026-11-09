@@ -12,6 +12,9 @@ import com.desafio.ride.redis.RideRedisService;
 
 import feign.FeignException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -21,6 +24,8 @@ import java.util.Map;
 
 @Service
 public class RideService {
+
+    private static final Logger log = LoggerFactory.getLogger(RideService.class);
 
     private final RideRepository rideRepository;
     private final AccountClient accountClient;
@@ -321,6 +326,13 @@ public class RideService {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND,
                     "Conta não encontrada"
+            );
+        } catch (FeignException exception) {
+            log.error("Falha ao consultar o Account Service (conta {}): status={} mensagem={}",
+                    accountId, exception.status(), exception.getMessage());
+            throw new ResponseStatusException(
+                    HttpStatus.SERVICE_UNAVAILABLE,
+                    "Serviço de contas temporariamente indisponível. Tente novamente."
             );
         }
     }

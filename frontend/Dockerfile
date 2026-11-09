@@ -10,7 +10,8 @@ RUN npm ci
 
 COPY . .
 
-RUN npm run build -- --configuration production
+# "production,local": build otimizado, mas apontando para o back local (http://localhost:8080)
+RUN npm run build -- --configuration production,local
 
 # Etapa 2: execução do Angular SSR
 FROM node:24.11.0-alpine AS frontend-runtime

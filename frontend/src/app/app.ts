@@ -26,6 +26,8 @@ import SockJS from 'sockjs-client';
 
 import type * as L from 'leaflet';
 
+import { environment } from '../environments/environment';
+
 interface Ride {
   id: number;
   clientId: number;
@@ -99,7 +101,7 @@ type UserRole = 'CLIENT' | 'DRIVER' | null;
 })
 export class App implements OnInit, OnDestroy {
 
-  private readonly api = 'https://api-gateway-neov.onrender.com/api/rides';
+  private readonly api = environment.apiUrl;
 
   private readonly geocodingApi =
     'https://photon.komoot.io/api/';
@@ -197,7 +199,7 @@ export class App implements OnInit, OnDestroy {
   conectarWebSocket(): void {
     this.stompClient = new Client({
       webSocketFactory: () =>
-        new SockJS('https://api-gateway-neov.onrender.com/ws') as WebSocket,
+        new SockJS(environment.wsUrl) as WebSocket,
 
       reconnectDelay: 5000,
       debug: () => {}
@@ -356,7 +358,11 @@ export class App implements OnInit, OnDestroy {
     this.destruirMapa();
 
     try {
-      const L = await import('leaflet');
+      // O Leaflet é um pacote CommonJS: no build de produção o import dinâmico
+      // devolve a biblioteca dentro de "default"; no ng serve, devolve direto.
+      const leafletModule = await import('leaflet');
+      const L = ((leafletModule as unknown as { default?: typeof import('leaflet') }).default
+        ?? leafletModule) as typeof import('leaflet');
 
       this.leaflet = L;
 
