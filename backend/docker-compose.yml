@@ -38,6 +38,7 @@ services:
       - "8080:8080"
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      RIDE_SERVICE_URL: lb://ride-service
     depends_on:
       - eureka-server
     restart: unless-stopped
