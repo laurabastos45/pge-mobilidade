@@ -99,7 +99,7 @@ type UserRole = 'CLIENT' | 'DRIVER' | null;
 })
 export class App implements OnInit, OnDestroy {
 
-  private readonly api = 'http://localhost:8082/api/rides';
+  private readonly api = 'https://api-gateway-neov.onrender.com/api/rides';
 
   private readonly geocodingApi =
     'https://photon.komoot.io/api/';
@@ -197,7 +197,7 @@ export class App implements OnInit, OnDestroy {
   conectarWebSocket(): void {
     this.stompClient = new Client({
       webSocketFactory: () =>
-        new SockJS('http://localhost:8082/ws') as WebSocket,
+        new SockJS('https://api-gateway-neov.onrender.com/ws') as WebSocket,
 
       reconnectDelay: 5000,
       debug: () => {}
