@@ -9,20 +9,11 @@ spring:
     gateway:
       server:
         webmvc:
-          websocket:
-            allowed-origins:
-              - https://pge-mobilidade.vercel.app
           routes:
-            - id: ride-websocket
-              uri: lb:ws://ride-service
+            - id: ride-service-api
+              uri: https://ride-service-0k5f.onrender.com
               predicates:
-                - Path=/ws/**
-                - Header=Upgrade, websocket
-
-            - id: ride-sockjs
-              uri: lb://ride-service
-              predicates:
-                - Path=/ws/**
+                - Path=/api/rides/**
 
 eureka:
   client:
