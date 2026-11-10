@@ -17,4 +17,10 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
             Long driverId,
             List<RideStatus> statuses
     );
+
+    // Corridas aceitas ou em andamento do motorista (a tela recupera após recarregar)
+    List<Ride> findByDriverIdAndStatusIn(
+            Long driverId,
+            List<RideStatus> statuses
+    );
 }

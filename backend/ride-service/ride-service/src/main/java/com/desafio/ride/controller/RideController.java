@@ -39,6 +39,11 @@ public class RideController {
         return rideService.listarCorridasDisponiveis();
     }
 
+    @GetMapping("/driver/{driverId}/active")
+    public List<Ride> listarCorridasAtivasDoMotorista(@PathVariable Long driverId) {
+        return rideService.listarCorridasAtivasDoMotorista(driverId);
+    }
+
     @GetMapping("/estimate")
     public RouteEstimateResponse estimarCorrida(
             @RequestParam double originLat,

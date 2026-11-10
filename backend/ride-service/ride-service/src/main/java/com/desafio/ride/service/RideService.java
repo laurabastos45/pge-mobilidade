@@ -178,6 +178,13 @@ public class RideService {
         return rideRepository.findByStatus(RideStatus.WAITING);
     }
 
+    public List<Ride> listarCorridasAtivasDoMotorista(Long driverId) {
+        return rideRepository.findByDriverIdAndStatusIn(
+                driverId,
+                List.of(RideStatus.ACCEPTED, RideStatus.IN_PROGRESS)
+        );
+    }
+
     public Ride aceitarCorrida(Long rideId, Long driverId) {
 
         Map<String, Object> motorista =

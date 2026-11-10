@@ -17,7 +17,7 @@ import {
 
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { finalize } from 'rxjs';
+import { finalize, forkJoin } from 'rxjs';
 
 import { InputTextModule } from 'primeng/inputtext';
 
@@ -1167,17 +1167,16 @@ export class App implements OnInit, OnDestroy {
   // ==========================================
 
   carregarCorridasDisponiveis(): void {
-    this.http.get<Ride[]>(`${this.api}/available`)
+    // Busca também as corridas ativas do motorista no back, para que uma corrida
+    // aceita não "suma" da tela depois de recarregar a página.
+    forkJoin({
+      corridas: this.http.get<Ride[]>(`${this.api}/available`),
+      minhasAtivas: this.http.get<Ride[]>(
+        `${this.api}/driver/${this.driverId}/active`
+      )
+    })
       .subscribe({
-        next: (corridas) => {
-
-          const minhasAtivas = this.rides.filter(ride =>
-            ride.driverId === this.driverId &&
-            (
-              ride.status === 'ACCEPTED' ||
-              ride.status === 'IN_PROGRESS'
-            )
-          );
+        next: ({ corridas, minhasAtivas }) => {
 
           const corridasDisponiveis = corridas.filter(
             corrida => corrida.status === 'WAITING'
