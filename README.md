@@ -123,7 +123,7 @@ docker compose up --build -d
 
 Após a inicialização dos serviços:
 
-| Serviço | Endereço |
+| Serviço | Endereço
 |---|---|
 | Aplicação Web | http://localhost:4200 |
 | API Gateway | http://localhost:8080 |
