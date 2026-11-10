@@ -1,25 +1,35 @@
 # 🚗 PGE Mobilidade
 
-Sistema de mobilidade urbana desenvolvido com arquitetura de microsserviços, permitindo a solicitação e o gerenciamento de corridas.
+Sistema de mobilidade urbana desenvolvido com **Java 21, Spring Boot, Spring Cloud e Angular**, utilizando arquitetura de microsserviços.
 
-O projeto foi desenvolvido como parte de um desafio técnico, utilizando tecnologias modernas para construção de aplicações distribuídas.
+O projeto tem como objetivo disponibilizar uma aplicação web com funcionalidades relacionadas ao gerenciamento de contas e à solicitação de corridas.
 
-## 🏗️ Arquitetura
+## 🌐 Acesso à aplicação
 
-O sistema está organizado em dois módulos principais:
+- **Frontend:** https://pge-mobilidade.vercel.app
+- **API Gateway:** https://api-gateway-neov.onrender.com
 
-- **Backend:** microsserviços desenvolvidos com Spring Boot.
-- **Frontend:** aplicação web desenvolvida com Angular.
+A aplicação está disponível online, sem necessidade de instalação ou configuração local.
 
-### Microsserviços
+## 🏗️ Arquitetura do projeto
 
-| Serviço | Responsabilidade | Porta |
-|---|---|---|
-| Eureka Server | Descoberta e registro dos serviços | 8761 |
-| API Gateway | Ponto de entrada da aplicação | 8080 |
-| Account Service | Gerenciamento de contas | 8081 |
-| Ride Service | Gerenciamento de corridas | 8082 |
-| Frontend | Interface web da aplicação | 4200 |
+O backend foi estruturado utilizando arquitetura de microsserviços, com serviços independentes e responsabilidades específicas.
+
+| Serviço | Responsabilidade |
+|---|---|
+| Account Service | Gerenciamento de contas de usuários |
+| Ride Service | Gerenciamento e solicitação de corridas |
+| API Gateway | Recebimento e roteamento das requisições |
+| Eureka Server | Registro e descoberta dos microsserviços |
+
+### Fluxo de comunicação
+
+1. O usuário acessa a aplicação pelo frontend Angular.
+2. O frontend envia requisições para o API Gateway.
+3. O Gateway direciona as requisições ao microsserviço correspondente.
+4. Os microsserviços executam as operações solicitadas.
+5. Quando necessário, os serviços realizam comunicação entre si utilizando OpenFeign.
+6. As respostas são retornadas ao frontend.
 
 ## 🛠️ Tecnologias utilizadas
 
@@ -27,136 +37,90 @@ O sistema está organizado em dois módulos principais:
 - Java 21
 - Spring Boot
 - Spring Cloud
-- Spring Cloud Netflix Eureka
 - Spring Cloud Gateway
-- Spring Data JPA
-- PostgreSQL
-- RabbitMQ
-- Redis
-- WebSocket
+- Netflix Eureka
+- OpenFeign
+- Spring Cloud LoadBalancer
 - Maven
 
 ### Frontend
-- Angular 21
+- Angular
 - TypeScript
-- HTML
-- CSS
+- HTML5
+- CSS3
+- PrimeNG
+- Leaflet
+- RxJS
+- STOMP
+- SockJS
 
-### Infraestrutura e ferramentas
+### Banco de dados e infraestrutura
+- PostgreSQL
+- Redis
+- RabbitMQ
 - Docker
 - Docker Compose
-- Git e GitHub
 
-## 📂 Estrutura do projeto
+### Hospedagem e publicação
+- Render — Backend
+- Vercel — Frontend
+- Git e GitHub — Versionamento de código
 
-```text
-pge-mobilidade/
-│
-├── backend/
-│   ├── account-service/
-│   ├── api-gateway/
-│   ├── eureka-server/
-│   ├── ride-service/
-│   ├── Dockerfile.backend
-│   └── docker-compose.yml
-│
-├── frontend/
-│   ├── src/
-│   ├── package.json
-│   └── angular.json
-│
-└── .gitignore
-```
+## ⚙️ Funcionalidades e recursos
 
-## ⚙️ Pré-requisitos
+- Gerenciamento de contas de usuários.
+- Solicitação e gerenciamento de corridas.
+- Integração entre frontend e backend por meio de APIs.
+- Comunicação entre microsserviços.
+- Descoberta de serviços com Eureka.
+- Roteamento de requisições com API Gateway.
+- Recursos de comunicação em tempo real configurados com WebSocket.
 
-Para executar o projeto, é necessário ter instalado:
+## 🐳 Ambiente de desenvolvimento
 
-- JDK 21
-- Node.js e npm
-- Docker Desktop
-- Git
+O ambiente local utiliza Docker Compose para organizar a execução dos serviços e suas dependências.
 
-Também é necessário disponibilizar as instâncias de PostgreSQL, RabbitMQ e Redis utilizadas pelo backend.
-
-## 🚀 Como executar
-
-### 1. Clonar o repositório
-
-```bash
-git clone https://github.com/laurabastos45/pge-mobilidade.git
-```
-
-```bash
-cd pge-mobilidade
-```
-
-### 2. Configurar as variáveis de ambiente
-
-Dentro da pasta `backend`, crie um arquivo chamado `.env`:
-
-```env
-SPRING_DATASOURCE_USERNAME=seu_usuario
-SPRING_DATASOURCE_PASSWORD=sua_senha
-
-SPRING_RABBITMQ_USERNAME=seu_usuario
-SPRING_RABBITMQ_PASSWORD=sua_senha
-```
-
-Configure os valores de acordo com suas instâncias locais. Não compartilhe esse arquivo nem envie credenciais para o GitHub.
-
-### 3. Iniciar os serviços
-
-Com as dependências de infraestrutura disponíveis, acesse a pasta do backend:
-
-```bash
-cd backend
-```
-
-Execute:
-
-```bash
-docker compose up --build -d
-```
-
-### 4. Acessar a aplicação
-
-Após a inicialização dos serviços:
-
-| Serviço | Endereço
-|---|---|
-| Aplicação Web | http://localhost:4200 |
-| API Gateway | http://localhost:8080 |
-| Account Service | http://localhost:8081 |
-| Ride Service | http://localhost:8082 |
-| Eureka Dashboard | http://localhost:8761 |
+| Componente | Porta local |
+|---|---:|
+| Frontend | 4200 |
+| API Gateway | 8080 |
+| Account Service | 8081 |
+| Ride Service | 8082 |
+| Eureka Server | 8761 |
+| PostgreSQL | 5434 |
+| Redis | 6379 |
+| RabbitMQ | 5672 |
+| RabbitMQ Management | 15672 |
 
 ## 🧪 Testes
 
-O backend possui testes automatizados com JUnit, permitindo validar funcionalidades e comportamentos dos serviços.
+Foram realizados testes automatizados para validar o comportamento das funcionalidades do projeto.
 
-## 📌 Objetivos técnicos
+Durante o desenvolvimento, seis testes foram executados com sucesso em uma das etapas de validação.
 
-Este projeto permite aplicar conhecimentos em:
+## 🚀 Publicação
+
+A aplicação foi disponibilizada utilizando serviços de hospedagem em nuvem:
+
+- O frontend Angular está hospedado na Vercel.
+- Os serviços do backend estão hospedados no Render.
+- A comunicação entre frontend e backend acontece por meio do API Gateway.
+
+## 📚 Aprendizados
+
+O desenvolvimento deste projeto proporcionou experiência prática com:
 
 - Arquitetura de microsserviços.
-- Comunicação entre serviços.
-- Service Discovery com Eureka.
-- Roteamento com API Gateway.
-- Mensageria com RabbitMQ.
-- Cache e armazenamento com Redis.
-- Comunicação em tempo real com WebSocket.
-- Containerização com Docker.
-- Desenvolvimento de interfaces com Angular.
+- Desenvolvimento de APIs REST com Java e Spring Boot.
+- Comunicação entre serviços utilizando OpenFeign.
+- Descoberta de serviços com Eureka.
+- Roteamento com Spring Cloud Gateway.
+- Configuração de ambientes com Docker.
+- Integração entre Angular e backend.
+- Testes automatizados.
+- Investigação de erros por meio de logs.
+- Deploy e configuração de aplicações em produção.
 
-## 👩‍💻 Desenvolvedora
+## 👩‍💻 Projeto
 
-**Ana Laura Bastos**
-
-Estudante de Análise e Desenvolvimento de Sistemas, com foco em desenvolvimento backend Java e construção de aplicações utilizando Spring Boot.
-
-- GitHub: [@laurabastos45](https://github.com/laurabastos45)
-
----
-
-Desenvolvido como projeto prático de arquitetura de software e desenvolvimento de sistemas.
+Projeto desenvolvido como experiência prática de desenvolvimento de software, integração de tecnologias e aplicação de conceitos de arquitetura distribuída.
