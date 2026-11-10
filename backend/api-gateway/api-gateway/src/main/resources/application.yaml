@@ -45,4 +45,4 @@ management:
 
 app:
   cors:
-    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:4200,https://pge-mobilidade.vercel.app}
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:[*],https://*.vercel.app}
