@@ -20,7 +20,9 @@ public class CorsConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(allowedOrigins);
+        // Padrões aceitam curinga: "https://*.vercel.app" (produção e previews da Vercel)
+        // e "http://localhost:[*]" (qualquer porta local).
+        config.setAllowedOriginPatterns(allowedOrigins);
         config.setAllowedMethods(
                 List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
         );
